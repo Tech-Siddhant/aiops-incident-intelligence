@@ -1,0 +1,12 @@
+[
+  {
+    "incident_id": "INC-001",
+    "incident_type": "database_connection_saturation",
+    "root_cause_service": "database",
+    "start_time": "2026-01-01T00:15:00Z",
+    "detection_time": "2026-01-01T00:15:40Z",
+    "end_time": "2026-01-01T00:30:00Z",
+    "severity": "critical",
+    "description": "Database connection pool saturation cascade."
+  }
+]
