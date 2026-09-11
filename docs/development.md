@@ -13,8 +13,9 @@ python3 -m venv .venv
 # 2. Activate the virtual environment
 source .venv/bin/activate
 
-# 3. Install in editable mode with test dependencies
+# 3. Install in editable mode with all dependencies
 pip install -e ".[test]"
+# Or: pip install -r requirements.txt
 ```
 
 ## 3. Telemetry & Data Workflows
@@ -34,7 +35,36 @@ To verify that generated datasets strictly adhere to data contract bounds and te
 python scripts/validate_telemetry.py
 ```
 
-## 4. Configuration & Determinism
+### Training & Serializing Models
+To train the baseline and ML models (Isolation Forest, Incident Predictor, Severity Classifier) and output compressed artifacts to `data/models/`:
+```bash
+python scripts/train_models.py
+```
+
+## 4. Serving & Web Dashboard
+
+Start the FastAPI backend with the interactive frontend dashboard:
+```bash
+uvicorn app.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+- API Documentation (Swagger UI): `http://localhost:8000/docs`
+- Interactive Operations Dashboard: `http://localhost:8000/`
+
+## 5. Running Evaluations & MLOps Monitoring
+
+### Comprehensive Final Benchmark Suite
+Execute the multi-layer evaluation pipeline across Anomaly Detection, Prediction, Severity Classification, RCA, and System Latency/Memory:
+```bash
+python evaluation/run_final_evaluation.py
+```
+
+### Continuous Drift & Health Evaluation
+Run Kolmogorov-Smirnov distribution drift testing, missing rate checks, and model latency profiling:
+```bash
+python evaluation/run_mlops_monitoring.py
+```
+
+## 6. Configuration & Determinism
 Central configuration resides in `app/config.py`. Key runtime parameters:
 - `ROOT_DIR`: Root repository path resolved via `pathlib.Path`.
 - `DATA_DIR`: Base data directory (configurable via `AIOPS_DATA_DIR` environment variable).
@@ -43,23 +73,23 @@ Central configuration resides in `app/config.py`. Key runtime parameters:
 - `DEFAULT_SAMPLING_INTERVAL_SECONDS`: Metric collection interval (`10` seconds).
 - `DEFAULT_DURATION_SECONDS`: Simulation window length (`3600` seconds).
 
-## 5. Running Tests
+## 7. Running Tests
 Run the automated test suite locally:
 ```bash
 pytest -q
 ```
-All tests must execute offline without external network or database dependencies.
+All tests execute offline without external network or database dependencies.
 
-## 6. Code & Contribution Conventions
+## 8. Code & Contribution Conventions
 - **Minimal Abstraction**: Adhere to YAGNI. Favor standard library primitives over custom boilerplate.
 - **Type Annotations**: Provide explicit type hints for function signatures and data structures.
 - **Pure & Deterministic**: Ensure all data generation and feature transformations accept an explicit random seed or configuration object.
 - **Relative Path Resolution**: Never hardcode absolute filesystem paths. Always resolve paths relative to `ROOT_DIR` or use `pathlib.Path`.
 
-## 7. Pre-Submission Checklist
+## 9. Pre-Submission Checklist
 Before committing or opening a pull request, run:
 ```bash
-# 1. Run all unit tests
+# 1. Run all unit & integration tests
 pytest -q
 
 # 2. Regenerate standard dataset
@@ -67,4 +97,11 @@ python scripts/generate_telemetry.py --duration 3600 --interval 10
 
 # 3. Verify quality and contract compliance
 python scripts/validate_telemetry.py
+
+# 4. Retrain model artifacts
+python scripts/train_models.py
+
+# 5. Execute benchmark evaluation
+python evaluation/run_final_evaluation.py
 ```
+

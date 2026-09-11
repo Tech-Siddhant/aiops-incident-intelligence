@@ -1,7 +1,12 @@
 """End-to-end local MLOps monitoring and validation execution."""
 import json
-import tempfile
 from pathlib import Path
+import sys
+import tempfile
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from app.data.preprocess import preprocess_telemetry
 from app.data.synthetic import SyntheticConfig, generate_synthetic_telemetry

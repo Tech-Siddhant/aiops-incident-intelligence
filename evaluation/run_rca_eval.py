@@ -1,6 +1,13 @@
 """Run RCA evaluation over synthetic data."""
 import json
+from pathlib import Path
+import sys
 import pandas as pd
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from app.data.synthetic import SyntheticConfig, generate_synthetic_telemetry
 from app.data.preprocess import preprocess_telemetry
 from app.models.anomaly_isolation_forest import IsolationForestConfig, detect_anomalies_iforest

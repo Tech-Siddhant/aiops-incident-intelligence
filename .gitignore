@@ -27,9 +27,13 @@ htmlcov/
 *.swp
 *.swo
 
+# Tool & Assistant Caches
+.serena/
+
 # OS & Temporary
 .DS_Store
 Thumbs.db
 /tmp/
 *.tmp
+
 

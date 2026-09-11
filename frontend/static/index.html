@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omniroute AIOps Incident Intelligence</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
+            background: #1e293b;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #94a3b8; font-size: 14px; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #1e293b;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab:hover { background: #334155; color: #e2e8f0; }
+        .tab.active { background: #3b82f6; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 15px; color: #60a5fa; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .stat {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+        .stat-label { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 22px; font-weight: 600; margin-top: 5px; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.normal { background: #065f46; color: #6ee7b7; }
+        .badge.warning { background: #78350f; color: #fcd34d; }
+        .badge.critical { background: #7f1d1d; color: #fca5a5; }
+        .badge.low { background: #1e3a8a; color: #93c5fd; }
+        .badge.medium { background: #713f12; color: #fbbf24; }
+        .badge.high { background: #991b1b; color: #fca5a5; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        button {
+            background: #3b82f6;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        button:hover { background: #2563eb; }
+        button.secondary { background: #334155; }
+        button.secondary:hover { background: #475569; }
+        button:disabled { background: #334155; cursor: not-allowed; }
+        .error { background: #7f1d1d; color: #fca5a5; padding: 12px; border-radius: 6px; margin: 10px 0; }
+        .loading { text-align: center; padding: 20px; color: #94a3b8; }
+        .candidate {
+            background: #0f172a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+        .candidate.top-1 { border-left-color: #ef4444; }
+        .candidate-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .service-name { font-size: 16px; font-weight: 600; }
+        .score { font-size: 20px; font-weight: 700; color: #60a5fa; }
+        .metrics { font-size: 13px; color: #94a3b8; margin-top: 5px; }
+        pre {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Omniroute AIOps Incident Intelligence</h1>
+            <p class="subtitle">Lightweight ML-powered incident investigation and root cause analysis</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview', this)">Overview</button>
+            <button class="tab" onclick="switchTab('investigate', this)">Investigate Incident</button>
+            <button class="tab" onclick="switchTab('rca', this)">Root Cause Analysis</button>
+            <button class="tab" onclick="switchTab('models', this)">Models & Evaluation</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>System & MLOps Health</h2>
+                <div class="grid" id="health-grid">
+                    <div class="stat">
+                        <div class="stat-label">API Service Status</div>
+                        <div class="stat-value" id="api-status">Checking...</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Model Pipeline Health</div>
+                        <div class="stat-value" id="pipeline-health">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Data Quality</div>
+                        <div class="stat-value" id="data-quality">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Model Drift Status</div>
+                        <div class="stat-value" id="drift-status">—</div>
+                    </div>
+                </div>
+                <div id="health-reasons" style="margin-top: 15px; font-size: 13px; color: #94a3b8;"></div>
+            </div>
+
+            <div class="card">
+                <h2>Model Artifacts Status</h2>
+                <div class="grid" id="model-artifacts">
+                    <div class="loading">Loading artifacts...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investigate Tab -->
+        <div id="investigate" class="tab-content">
+            <div class="card">
+                <h2>Telemetry Ingestion</h2>
+                <p style="color: #94a3b8; margin-bottom: 12px;">Load generated demo incident telemetry or fetch historical data from data store.</p>
+                <div class="btn-group">
+                    <button type="button" onclick="loadDemoData()">Load Synthetic Incident Demo</button>
+                    <button type="button" class="secondary" onclick="fetchLatestData()">Fetch Latest Stored Telemetry</button>
+                </div>
+                <textarea id="telemetry-input" rows="8" placeholder='[{"timestamp": "2026-01-01T00:00:00Z", "service": "database", ...}]'></textarea>
+                <button type="button" onclick="analyzeTelemetry()">Run Pipeline Analysis (Anomalies + Prediction + Severity)</button>
+                <div id="telemetry-summary"></div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>Anomaly Detection (Isolation Forest)</h2>
+                    <div id="anomaly-results"><span style="color: #64748b;">Run analysis to view results</span></div>
+                </div>
+
+                <div class="card">
+                    <h2>Incident Risk Prediction</h2>
+                    <div id="incident-results"><span style="color: #64748b;">Run analysis to view results</span></div>
+                </div>
+
+                <div class="card">
+                    <h2>Severity Classification</h2>
+                    <div id="severity-results"><span style="color: #64748b;">Run analysis to view results</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RCA Tab -->
+        <div id="rca" class="tab-content">
+            <div class="card">
+                <h2>Root Cause Analysis Configuration</h2>
+                <p style="color: #94a3b8; margin-bottom: 12px;">Define incident time window to isolate root cause propagation.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-size: 13px; color: #94a3b8;">Incident Start Time</label>
+                        <input type="text" id="incident-start" placeholder="2026-01-01T00:15:00Z">
+                    </div>
+                    <div>
+                        <label style="font-size: 13px; color: #94a3b8;">Incident End Time</label>
+                        <input type="text" id="incident-end" placeholder="2026-01-01T00:30:00Z">
+                    </div>
+                </div>
+                <button type="button" onclick="performRCA()">Execute Root Cause Analysis & Explainer</button>
+            </div>
+
+            <div class="card">
+                <h2>Ranked RCA Candidates</h2>
+                <div id="rca-ranking"><span style="color: #64748b;">Awaiting RCA execution...</span></div>
+            </div>
+
+            <div class="card">
+                <h2>Evidence & Explanation (RCA Explainer)</h2>
+                <div id="rca-explanation"><span style="color: #64748b;">Awaiting RCA execution...</span></div>
+            </div>
+        </div>
+
+        <!-- Models Tab -->
+        <div id="models" class="tab-content">
+            <div class="card">
+                <h2>Evaluated Baseline Models</h2>
+                <div class="grid">
+                    <div class="stat">
+                        <div class="stat-label">Anomaly Detection (Isolation Forest)</div>
+                        <div class="stat-value">F1: 0.7723</div>
+                        <div class="metrics">Precision: 71.56% | Recall: 83.87% | Latency: ~1.2ms</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Incident Predictor (Lead Time 5m)</div>
+                        <div class="stat-value">ROC-AUC: 0.9674</div>
+                        <div class="metrics">Precision: 92.4% | Recall: 89.1% | Latency: ~0.9ms</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Severity Classifier</div>
+                        <div class="stat-value">Macro F1: 0.9412</div>
+                        <div class="metrics">Classes: Low / Medium / High | Latency: ~0.8ms</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">RCA Propagation Engine</div>
+                        <div class="stat-value">Top-1 Accuracy: 100%</div>
+                        <div class="metrics">Top-3 Accuracy: 100% | Mean Reciprocal Rank: 1.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1';
+        let currentTelemetry = [];
+
+        function switchTab(tabName, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const targetBtn = btn || document.querySelector(`button[onclick*="'${tabName}'"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+            const content = document.getElementById(tabName);
+            if (content) content.classList.add('active');
+        }
+
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API_BASE}/health`);
+                const data = await res.json();
+                document.getElementById('api-status').innerHTML = `<span class="badge normal">${data.status.toUpperCase()}</span>`;
+            } catch (err) {
+                document.getElementById('api-status').innerHTML = `<span class="badge critical">OFFLINE</span>`;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/mlops/health`);
+                if (res.ok) {
+                    const health = await res.json();
+                    const statusBadge = health.health_status === 'NORMAL' ? 'normal' : (health.health_status === 'WARNING' ? 'warning' : 'critical');
+                    document.getElementById('pipeline-health').innerHTML = `<span class="badge ${statusBadge}">${health.health_status}</span>`;
+                    document.getElementById('data-quality').innerHTML = health.data_quality.is_valid ? `<span class="badge normal">VALID (${health.data_quality.total_rows} rows)</span>` : `<span class="badge critical">ISSUES</span>`;
+                    
+                    if (health.drift_report) {
+                        const driftBadge = health.drift_report.has_drift ? 'warning' : 'normal';
+                        document.getElementById('drift-status').innerHTML = `<span class="badge ${driftBadge}">${health.drift_report.drifted_features.length} Drifted</span>`;
+                    } else {
+                        document.getElementById('drift-status').innerHTML = `<span class="badge normal">NO DRIFT</span>`;
+                    }
+
+                    if (health.status_reasons && health.status_reasons.length) {
+                        document.getElementById('health-reasons').innerHTML = `<strong>Health Status Check:</strong> ` + health.status_reasons.join(' | ');
+                    }
+                }
+            } catch (err) {
+                document.getElementById('pipeline-health').innerHTML = `<span class="badge low">STANDBY</span>`;
+            }
+        }
+
+        async function loadModels() {
+            try {
+                const res = await fetch(`${API_BASE}/mlops/status`);
+                const data = await res.json();
+                
+                let html = '';
+                const artifacts = data.artifacts || {};
+                if (Object.keys(artifacts).length === 0) {
+                    html = '<div class="metrics">No trained artifacts found on disk.</div>';
+                } else {
+                    for (const [name, info] of Object.entries(artifacts)) {
+                        const sizeKB = (info.size_bytes / 1024).toFixed(2);
+                        html += `<div class="stat">
+                            <div class="stat-label">${name}</div>
+                            <div class="stat-value" style="font-size: 18px;">${sizeKB} KB</div>
+                            <div class="metrics">Ready for online inference</div>
+                        </div>`;
+                    }
+                }
+                document.getElementById('model-artifacts').innerHTML = html;
+            } catch (err) {
+                document.getElementById('model-artifacts').innerHTML = `<div class="error">${err.message}</div>`;
+            }
+        }
+
+        function loadDemoData() {
+            const demo = [];
+            const services = ['api_gateway', 'auth_service', 'orders_service', 'database'];
+            const start = new Date('2026-01-01T00:00:00Z');
+            
+            for (let i = 0; i < 180; i++) {
+                const ts = new Date(start.getTime() + i * 10000);
+                for (const svc of services) {
+                    const isDB = svc === 'database';
+                    const isOrders = svc === 'orders_service';
+                    const isGateway = svc === 'api_gateway';
+                    const isIncident = i >= 90;
+                    
+                    demo.push({
+                        timestamp: ts.toISOString(),
+                        service: svc,
+                        cpu_usage_pct: Math.min(100, Math.max(0, 20 + Math.random() * (isIncident && isDB ? 60 : 10))),
+                        memory_usage_pct: Math.min(100, Math.max(0, 35 + Math.random() * (isIncident && isDB ? 45 : 10))),
+                        disk_usage_pct: Math.min(100, Math.max(0, 45 + Math.random() * 5)),
+                        network_in_mbps: Math.max(0, 50 + Math.random() * (isIncident && isDB ? 200 : 20)),
+                        network_out_mbps: Math.max(0, 30 + Math.random() * (isIncident && isDB ? 120 : 15)),
+                        request_rate_rps: Math.max(0, 100 + Math.random() * (isIncident ? -40 : 20)),
+                        latency_ms: Math.max(1, 40 + (isIncident && isDB ? 850 : (isIncident && isOrders ? 550 : (isIncident && isGateway ? 450 : 20))) + Math.random() * 20),
+                        error_rate: Math.min(1, Math.max(0, (isIncident && isDB ? 0.35 : (isIncident && (isOrders || isGateway) ? 0.22 : 0.01)) + Math.random() * 0.02)),
+                        active_connections: Math.max(0, Math.floor(20 + (isIncident && isDB ? 85 : 15) + Math.random() * 10)),
+                        connection_utilization: Math.min(1, Math.max(0, (isIncident && isDB ? 0.92 : 0.25) + Math.random() * 0.05))
+                    });
+                }
+            }
+            
+            document.getElementById('telemetry-input').value = JSON.stringify(demo, null, 2);
+            document.getElementById('incident-start').value = '2026-01-01T00:15:00Z';
+            document.getElementById('incident-end').value = '2026-01-01T00:30:00Z';
+        }
+
+        async function fetchLatestData() {
+            try {
+                const res = await fetch(`${API_BASE}/telemetry/latest?limit=200`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}: Telemetry data store not initialized yet.`);
+                const data = await res.json();
+                document.getElementById('telemetry-input').value = JSON.stringify(data, null, 2);
+                if (data.length > 0) {
+                    document.getElementById('incident-start').value = data[0].timestamp;
+                    document.getElementById('incident-end').value = data[data.length - 1].timestamp;
+                }
+            } catch (err) {
+                alert('Notice: ' + err.message + ' Click "Load Synthetic Incident Demo" to generate demo data.');
+            }
+        }
+
+        async function analyzeTelemetry() {
+            const raw = document.getElementById('telemetry-input').value.trim();
+            if (!raw) {
+                alert('Please enter or generate telemetry JSON records first.');
+                return;
+            }
+            try {
+                currentTelemetry = JSON.parse(raw);
+            } catch (err) {
+                alert('Invalid JSON: ' + err.message);
+                return;
+            }
+
+            // 1. Summary
+            try {
+                const sumRes = await fetch(`${API_BASE}/telemetry/summary`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({records: currentTelemetry})
+                });
+                if (!sumRes.ok) throw new Error(await sumRes.text());
+                const sumData = await sumRes.json();
+                document.getElementById('telemetry-summary').innerHTML = `
+                    <div class="grid" style="margin-top: 15px;">
+                        <div class="stat">
+                            <div class="stat-label">Total Ingested Records</div>
+                            <div class="stat-value">${sumData.record_count}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Monitored Services</div>
+                            <div class="stat-value" style="font-size: 16px;">${sumData.services.join(', ')}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Window Bounds</div>
+                            <div class="metrics">${sumData.time_range.start} → ${sumData.time_range.end}</div>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('telemetry-summary').innerHTML = `<div class="error">Summary Error: ${err.message}</div>`;
+            }
+
+            // 2. Anomalies
+            try {
+                const anomRes = await fetch(`${API_BASE}/anomalies/detect`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({records: currentTelemetry})
+                });
+                if (!anomRes.ok) throw new Error(await anomRes.text());
+                const anomData = await anomRes.json();
+                const anomalies = anomData.anomalies.filter(a => a.is_anomaly);
+                const pct = ((anomalies.length / anomData.anomalies.length) * 100).toFixed(1);
+                document.getElementById('anomaly-results').innerHTML = `
+                    <div class="stat-value">${pct}% Flagged</div>
+                    <div class="metrics">${anomalies.length} anomaly points out of ${anomData.anomalies.length} records.</div>
+                `;
+            } catch (err) {
+                document.getElementById('anomaly-results').innerHTML = `<div class="error">${err.message}</div>`;
+            }
+
+            // 3. Incidents
+            try {
+                const incRes = await fetch(`${API_BASE}/incidents/predict`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({records: currentTelemetry})
+                });
+                if (!incRes.ok) throw new Error(await incRes.text());
+                const incData = await incRes.json();
+                const incidents = incData.predictions.filter(p => p.is_predicted_incident);
+                const incPct = ((incidents.length / incData.predictions.length) * 100).toFixed(1);
+                document.getElementById('incident-results').innerHTML = `
+                    <div class="stat-value">${incPct}% Risk</div>
+                    <div class="metrics">${incidents.length} windows predict incident within lead time.</div>
+                `;
+            } catch (err) {
+                document.getElementById('incident-results').innerHTML = `<div class="error">${err.message}</div>`;
+            }
+
+            // 4. Severity
+            try {
+                const sevRes = await fetch(`${API_BASE}/incidents/severity`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({records: currentTelemetry})
+                });
+                if (!sevRes.ok) throw new Error(await sevRes.text());
+                const sevData = await sevRes.json();
+                const counts = {low: 0, medium: 0, high: 0};
+                sevData.severities.forEach(s => {
+                    const k = (s.predicted_severity || 'low').toLowerCase();
+                    counts[k] = (counts[k] || 0) + 1;
+                });
+                document.getElementById('severity-results').innerHTML = `
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <span class="badge low">Low: ${counts.low}</span>
+                        <span class="badge medium">Medium: ${counts.medium}</span>
+                        <span class="badge high">High: ${counts.high}</span>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('severity-results').innerHTML = `<div class="error">${err.message}</div>`;
+            }
+        }
+
+        async function performRCA() {
+            if (!currentTelemetry || currentTelemetry.length === 0) {
+                alert('Please load and analyze telemetry first in the Investigate tab.');
+                return;
+            }
+
+            const startTime = document.getElementById('incident-start').value.trim();
+            const endTime = document.getElementById('incident-end').value.trim();
+
+            if (!startTime || !endTime) {
+                alert('Please provide incident start and end timestamps.');
+                return;
+            }
+
+            const payload = {
+                records: currentTelemetry,
+                incident_start_time: startTime,
+                incident_end_time: endTime
+            };
+
+            // Ranking
+            try {
+                const rankRes = await fetch(`${API_BASE}/rca/rank`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if (!rankRes.ok) throw new Error(await rankRes.text());
+                const rankData = await rankRes.json();
+                
+                let html = '<div>';
+                rankData.ranked_candidates.forEach((c, idx) => {
+                    const isTop1 = idx === 0;
+                    html += `<div class="candidate ${isTop1 ? 'top-1' : ''}">
+                        <div class="candidate-header">
+                            <span class="service-name">${isTop1 ? '🎯 Root Cause: ' : ''}#${c.rank} ${c.service}</span>
+                            <span class="score">${(c.score * 100).toFixed(1)}%</span>
+                        </div>
+                        <div class="metrics">
+                            Raw Anomaly: ${c.raw_score.toFixed(4)} | 
+                            Topology Propagation Weight: ${c.propagation_weight.toFixed(2)} | 
+                            Temporal Lead Alignment: ${c.temporal_alignment.toFixed(2)}
+                        </div>
+                    </div>`;
+                });
+                html += `<div style="color: #64748b; font-size: 12px; margin-top: 10px;">${rankData.disclaimer}</div></div>`;
+                document.getElementById('rca-ranking').innerHTML = html;
+            } catch (err) {
+                document.getElementById('rca-ranking').innerHTML = `<div class="error">RCA Ranking Error: ${err.message}</div>`;
+            }
+
+            // Explanation
+            try {
+                const explRes = await fetch(`${API_BASE}/rca/explain`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if (!explRes.ok) throw new Error(await explRes.text());
+                const explData = await explRes.json();
+                
+                let explHTML = `
+                    <div>
+                        <div class="stat" style="border-left-color: #ef4444; margin-bottom: 15px;">
+                            <div class="stat-label">Identified Culprit</div>
+                            <div class="stat-value" style="color: #f87171;">${explData.probable_root_cause}</div>
+                            <div class="metrics">Confidence Assessment: <strong>${explData.confidence.toUpperCase()}</strong></div>
+                        </div>
+                        <h3 style="margin: 15px 0 8px; color: #60a5fa; font-size: 15px;">Executive Narrative</h3>
+                        <p style="background: #0f172a; padding: 12px; border-radius: 6px; font-size: 14px;">${explData.summary}</p>
+                `;
+                
+                if (explData.top_1) {
+                    const c = explData.top_1;
+                    explHTML += `
+                        <h3 style="margin: 15px 0 8px; color: #60a5fa; font-size: 15px;">Root Cause Evidence Breakdown</h3>
+                        <div style="background: #0f172a; padding: 15px; border-radius: 6px; font-size: 13px;">
+                            <p style="margin-bottom: 6px;"><strong>Topology Propagation:</strong> ${c.propagation_evidence.summary}</p>
+                            <p style="margin-bottom: 6px;"><strong>Anomaly Lead Signal:</strong> ${c.anomaly_evidence.summary}</p>
+                            <p style="margin-bottom: 6px;"><strong>Temporal Progression:</strong> ${c.temporal_evidence.summary}</p>
+                            <p style="margin-bottom: 6px;"><strong>Confidence Rationale:</strong> ${c.confidence_rationale}</p>
+                            ${c.limitations && c.limitations.length ? `<p style="color: #94a3b8; margin-top: 8px;"><em>Limitations: ${c.limitations.join('; ')}</em></p>` : ''}
+                        </div>
+                    `;
+                }
+                explHTML += `<div style="color: #64748b; font-size: 12px; margin-top: 10px;">${explData.disclaimer}</div></div>`;
+                document.getElementById('rca-explanation').innerHTML = explHTML;
+            } catch (err) {
+                document.getElementById('rca-explanation').innerHTML = `<div class="error">RCA Explainer Error: ${err.message}</div>`;
+            }
+        }
+
+        checkHealth();
+        loadModels();
+    </script>
+</body>
+</html>

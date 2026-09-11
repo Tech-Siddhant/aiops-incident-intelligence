@@ -8,6 +8,7 @@ import time
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
 
@@ -41,7 +42,16 @@ async def log_requests(request: Request, call_next):
     )
     return response
 
+from fastapi.responses import RedirectResponse
+
 app.include_router(router)
+
+# Mount static files for the dashboard
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+
+@app.get("/", include_in_schema=False)
+def redirect_to_dashboard():
+    return RedirectResponse(url="/static/index.html")
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -50,4 +60,3 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "Internal Server Error", "message": str(exc)},
     )
-

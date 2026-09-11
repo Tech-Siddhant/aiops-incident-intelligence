@@ -21,6 +21,7 @@ from app.models.incident_predictor import IncidentPredictorBaseline
 from app.models.rca_engine import rank_root_causes
 from app.models.rca_explainer import generate_rca_explanation
 from app.models.severity_classifier import SeverityClassifierBaseline
+from app.mlops.monitoring import evaluate_model_health
 
 router = APIRouter(prefix="/api/v1")
 
@@ -46,6 +47,18 @@ def to_df(records: list[Any]) -> pd.DataFrame:
 def health_check():
     return {"status": "ok", "service": "omniroute-aiops"}
 
+@router.get("/telemetry/latest")
+def get_latest_telemetry(limit: int = 500):
+    """Retrieve the most recent telemetry records from the data store."""
+    p = Path("data/synthetic/telemetry.parquet")
+    if not p.exists():
+        raise HTTPException(status_code=404, detail="Telemetry data not found.")
+    
+    df = pd.read_parquet(p)
+    # Sort by timestamp descending and take the limit
+    df = df.sort_values("timestamp", ascending=False).head(limit)
+    return df.to_dict(orient="records")
+
 @router.get("/mlops/status")
 def get_mlops_status():
     """Retrieve lightweight artifact inventory."""
@@ -55,6 +68,28 @@ def get_mlops_status():
         for p in model_dir.glob("*.joblib"):
             status["artifacts"][p.name] = {"size_bytes": p.stat().st_size}
     return status
+
+@router.get("/mlops/health")
+def get_ml_health():
+    """Run holistic health, data quality, and drift monitoring."""
+    p = Path("data/synthetic/telemetry.parquet")
+    if not p.exists():
+        raise HTTPException(status_code=404, detail="Reference telemetry not found.")
+    
+    df = pd.read_parquet(p)
+    # Take a window of data for health check
+    current_df = df.tail(1000)
+    reference_df = df.head(1000) # Use the beginning as reference for drift check
+    
+    detector = get_model(IsolationForestDetector, "isolation_forest_latest.joblib")
+    
+    health_report = evaluate_model_health(
+        model=detector,
+        current_df=current_df,
+        reference_df=reference_df,
+        artifact_path=Path("data/models/isolation_forest_latest.joblib")
+    )
+    return health_report.to_dict()
 
 @router.post("/telemetry/summary")
 def get_telemetry_summary(req: TelemetryBatchRequest):
@@ -69,6 +104,7 @@ def get_telemetry_summary(req: TelemetryBatchRequest):
         }
     }
     return summary
+
 @router.post("/anomalies/detect")
 def detect_anomalies(req: TelemetryBatchRequest):
     df = to_df(req.records)
@@ -104,7 +140,6 @@ def get_rca_ranking(req: RcaRequest):
     detector = get_model(IsolationForestDetector, "isolation_forest_latest.joblib")
     anomalies_df = detector.predict(clean_df)
     
-    # Construct synthetic incident dict for RCA pipeline
     incident_dict = {
         "incident_id": "api_incident",
         "start_time": req.incident_start_time,

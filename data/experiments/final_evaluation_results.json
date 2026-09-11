@@ -1,0 +1,1053 @@
+{
+  "evaluation_timestamp": "2026-09-11T18:44:27Z",
+  "anomaly_detection": {
+    "statistical_baseline": {
+      "precision": 0.4524,
+      "recall": 0.2043,
+      "f1_score": 0.2815,
+      "false_positive_rate": 0.0861,
+      "detection_delay_seconds": 10.0,
+      "total_samples": 360,
+      "true_positives": 19,
+      "false_positives": 23,
+      "true_negatives": 244,
+      "false_negatives": 74
+    },
+    "isolation_forest": {
+      "precision": 0.7156,
+      "recall": 0.8387,
+      "f1_score": 0.7723,
+      "false_positive_rate": 0.1161,
+      "detection_delay_seconds": 10.0,
+      "total_samples": 360,
+      "true_positives": 78,
+      "false_positives": 31,
+      "true_negatives": 236,
+      "false_negatives": 15
+    }
+  },
+  "incident_prediction_and_severity": {
+    "prediction_train": {
+      "precision": 0.452,
+      "recall": 0.7463,
+      "f1_score": 0.563,
+      "pr_auc": 0.6956,
+      "roc_auc": 0.8261,
+      "total_samples": 5184,
+      "positive_samples": 1356,
+      "negative_samples": 3828
+    },
+    "prediction_val": {
+      "precision": 0.6894,
+      "recall": 0.6833,
+      "f1_score": 0.6863,
+      "pr_auc": 0.8125,
+      "roc_auc": 0.8328,
+      "total_samples": 1728,
+      "positive_samples": 783,
+      "negative_samples": 945
+    },
+    "prediction_test": {
+      "precision": 0.6308,
+      "recall": 0.6805,
+      "f1_score": 0.6547,
+      "pr_auc": 0.7599,
+      "roc_auc": 0.813,
+      "total_samples": 1728,
+      "positive_samples": 723,
+      "negative_samples": 1005
+    },
+    "prediction_lead_time_seconds": 1632.5,
+    "prediction_false_positives": 288,
+    "prediction_false_negatives": 231,
+    "severity_metrics": {
+      "macro_f1": 1.0,
+      "per_class_precision": {
+        "low": 0.0,
+        "medium": 0.0,
+        "high": 0.0,
+        "critical": 1.0
+      },
+      "per_class_recall": {
+        "low": 0.0,
+        "medium": 0.0,
+        "high": 0.0,
+        "critical": 1.0
+      },
+      "per_class_f1": {
+        "low": 0.0,
+        "medium": 0.0,
+        "high": 0.0,
+        "critical": 1.0
+      },
+      "confusion_matrix": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          177
+        ]
+      ],
+      "classes": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "total_samples": 177
+    },
+    "top_predictive_features": [
+      [
+        "memory_usage_pct_roll_mean_12",
+        -3.2215175782504013
+      ],
+      [
+        "disk_usage_pct",
+        3.050835928574213
+      ],
+      [
+        "system_max_error_rate",
+        -2.6101618287806905
+      ],
+      [
+        "system_mean_latency",
+        2.2435881825771307
+      ],
+      [
+        "memory_usage_pct_roll_max_12",
+        2.015790428151337
+      ],
+      [
+        "latency_ms_roll_max_12",
+        -1.718913806906848
+      ],
+      [
+        "connection_pressure",
+        -1.6877904813268763
+      ],
+      [
+        "memory_usage_pct_roll_mean_6",
+        -1.184025754667702
+      ],
+      [
+        "connection_utilization_roll_mean_12",
+        1.1626874918370904
+      ],
+      [
+        "latency_ms_roll_mean_12",
+        -1.0019823209749452
+      ]
+    ]
+  },
+  "root_cause_analysis": {
+    "metrics": {
+      "top_1_accuracy": 1.0,
+      "top_3_accuracy": 1.0,
+      "mean_reciprocal_rank": 1.0,
+      "total_incidents": 1,
+      "valid_evaluations": 1,
+      "missing_ground_truth": 0,
+      "details": [
+        {
+          "incident_id": "INC-001",
+          "ground_truth_root": "database",
+          "predicted_top_1": "database",
+          "actual_rank": 1,
+          "top_1_hit": true,
+          "top_3_hit": true
+        }
+      ]
+    },
+    "top_ranked_candidates": [
+      {
+        "service": "database",
+        "score": 0.3881,
+        "rank": 1,
+        "score_breakdown": {
+          "temporal": 0.8551,
+          "topology": 1.0,
+          "severity": 0.8945
+        },
+        "explanation": "Candidate 'database' (Rank 1, score 0.388): temporal=0.86 (onset: 2026-01-01T00:15:10Z), topology=1.00 (depth: 2), severity=0.89 (max_score: 0.641)."
+      },
+      {
+        "service": "auth_service",
+        "score": 0.2518,
+        "rank": 2,
+        "score_breakdown": {
+          "temporal": 0.7246,
+          "topology": 0.8,
+          "severity": 0.0964
+        },
+        "explanation": "Candidate 'auth_service' (Rank 2, score 0.252): temporal=0.72 (onset: 2026-01-01T00:15:00Z), topology=0.80 (depth: 1), severity=0.10 (max_score: 0.559)."
+      },
+      {
+        "service": "orders_service",
+        "score": 0.2381,
+        "rank": 3,
+        "score_breakdown": {
+          "temporal": 0.5652,
+          "topology": 0.3,
+          "severity": 0.9228
+        },
+        "explanation": "Candidate 'orders_service' (Rank 3, score 0.238): temporal=0.57 (onset: 2026-01-01T00:15:30Z), topology=0.30 (depth: 1), severity=0.92 (max_score: 0.658)."
+      },
+      {
+        "service": "api_gateway",
+        "score": 0.122,
+        "rank": 4,
+        "score_breakdown": {
+          "temporal": 0.2754,
+          "topology": 0.0,
+          "severity": 0.7103
+        },
+        "explanation": "Candidate 'api_gateway' (Rank 4, score 0.122): temporal=0.28 (onset: 2026-01-01T00:15:50Z), topology=0.00 (depth: 0), severity=0.71 (max_score: 0.651)."
+      }
+    ],
+    "top_explanation": {
+      "incident_id": "INC-001",
+      "evaluation_window": [
+        "2026-01-01T00:15:00Z",
+        "2026-01-01T00:25:00Z"
+      ],
+      "probable_root_cause": "database",
+      "confidence": "MEDIUM",
+      "summary": "Probable root cause identified as 'database' (Score: 0.388, Confidence: MEDIUM). Probable root cause: 'database' ranked #1 (Score: 0.388, Confidence: MEDIUM). Temporal evidence: Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence). Dependency evidence: Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service. Supporting evidence: Severe connection saturation: peak 100.0%; Elevated error rate: peak 4.08%.",
+      "candidates": [
+        {
+          "candidate_service": "database",
+          "rank": 1,
+          "score": 0.3881,
+          "confidence": "MEDIUM",
+          "classification": "Probable root cause",
+          "supporting_signals": [
+            "Severe connection saturation: peak 100.0%",
+            "Elevated error rate: peak 4.08%",
+            "High response latency: peak 656.8ms",
+            "High CPU utilization: peak 84.6%",
+            "High active connections: 110"
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 1.0,
+              "mean_value": 0.9453,
+              "unit": "%",
+              "description": "Observed peak connection pool utilization of 100.0% (mean 94.5%)"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.0408,
+              "mean_value": 0.0388,
+              "unit": "%",
+              "description": "Observed peak error rate of 4.08% (mean 3.88%)"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 656.8472,
+              "mean_value": 628.3828,
+              "unit": "ms",
+              "description": "Observed peak response latency of 656.8ms (mean 628.4ms)"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 84.6382,
+              "mean_value": 76.524,
+              "unit": "%",
+              "description": "Observed peak cpu usage of 84.6% (mean 76.5%)"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 67.3325,
+              "mean_value": 65.0374,
+              "unit": "%",
+              "description": "Memory Usage: peak 67.33%, mean 65.04%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 110.0,
+              "mean_value": 98.0656,
+              "unit": " conn",
+              "description": "Observed peak active connections of 110 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:10Z",
+            "onset_delta_seconds": 10.0,
+            "anomaly_samples": 60,
+            "anomaly_ratio": 0.9836,
+            "summary": "Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 2,
+            "upstream_callers": [
+              "orders_service"
+            ],
+            "downstream_dependencies": [],
+            "anomalous_callers": [
+              "orders_service"
+            ],
+            "anomalous_dependencies": [],
+            "propagation_role": "Leaf downstream dependency",
+            "summary": "Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service."
+          },
+          "inference": {
+            "temporal_score": 0.8551,
+            "topology_score": 1.0,
+            "severity_score": 0.8945,
+            "composite_score": 0.3881,
+            "confidence": "MEDIUM",
+            "confidence_rationale": "Moderate candidate score (0.388) with +0.136 lead over runner-up."
+          },
+          "summary": "Probable root cause: 'database' ranked #1 (Score: 0.388, Confidence: MEDIUM). Temporal evidence: Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence). Dependency evidence: Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service. Supporting evidence: Severe connection saturation: peak 100.0%; Elevated error rate: peak 4.08%.",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        },
+        {
+          "candidate_service": "auth_service",
+          "rank": 2,
+          "score": 0.2518,
+          "confidence": "MEDIUM",
+          "classification": "Secondary contributing service",
+          "supporting_signals": [
+            "Nominal metric ranges across observed window."
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 0.2409,
+              "mean_value": 0.1941,
+              "unit": "%",
+              "description": "Connection Pool Utilization: peak 24.09%, mean 19.41%"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.0016,
+              "mean_value": 0.001,
+              "unit": "%",
+              "description": "Error Rate: peak 0.16%, mean 0.10%"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 10.6335,
+              "mean_value": 7.8785,
+              "unit": "ms",
+              "description": "Response Latency: peak 10.63ms, mean 7.88ms"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 22.8983,
+              "mean_value": 18.2972,
+              "unit": "%",
+              "description": "CPU Usage: peak 22.90%, mean 18.30%"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 36.8397,
+              "mean_value": 34.999,
+              "unit": "%",
+              "description": "Memory Usage: peak 36.84%, mean 35.00%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 41.0,
+              "mean_value": 30.2131,
+              "unit": " conn",
+              "description": "Active Connections: peak 41.00 conn, mean 30.21 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:00Z",
+            "onset_delta_seconds": 0.0,
+            "anomaly_samples": 5,
+            "anomaly_ratio": 0.082,
+            "summary": "Earliest anomaly onset at 2026-01-01T00:15:00Z (t0 across all services); anomalous in 5 samples (8.2% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 1,
+            "upstream_callers": [
+              "api_gateway"
+            ],
+            "downstream_dependencies": [],
+            "anomalous_callers": [
+              "api_gateway"
+            ],
+            "anomalous_dependencies": [],
+            "propagation_role": "Leaf downstream dependency",
+            "summary": "Topology role: Leaf downstream dependency (depth 1). Observed propagation to upstream callers: api_gateway."
+          },
+          "inference": {
+            "temporal_score": 0.7246,
+            "topology_score": 0.8,
+            "severity_score": 0.0964,
+            "composite_score": 0.2518,
+            "confidence": "MEDIUM",
+            "confidence_rationale": "Rank 2 candidate score (0.252)."
+          },
+          "summary": "Observed propagation: 'auth_service' ranked #2 as a secondary contributing service (Score: 0.252). Earliest anomaly onset at 2026-01-01T00:15:00Z (t0 across all services); anomalous in 5 samples (8.2% persistence). Topology role: Leaf downstream dependency (depth 1). Observed propagation to upstream callers: api_gateway. Supporting evidence: Nominal metric ranges across observed window..",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        },
+        {
+          "candidate_service": "orders_service",
+          "rank": 3,
+          "score": 0.2381,
+          "confidence": "MEDIUM",
+          "classification": "Cascading failure symptom (downstream dependency failing)",
+          "supporting_signals": [
+            "Severe connection saturation: peak 80.7%",
+            "Elevated error rate: peak 28.36%",
+            "High response latency: peak 884.9ms",
+            "High CPU utilization: peak 76.0%",
+            "High active connections: 90"
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 0.807,
+              "mean_value": 0.7199,
+              "unit": "%",
+              "description": "Observed peak connection pool utilization of 80.7% (mean 72.0%)"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.2836,
+              "mean_value": 0.2613,
+              "unit": "%",
+              "description": "Observed peak error rate of 28.36% (mean 26.13%)"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 884.8752,
+              "mean_value": 812.9852,
+              "unit": "ms",
+              "description": "Observed peak response latency of 884.9ms (mean 813.0ms)"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 76.0116,
+              "mean_value": 64.1297,
+              "unit": "%",
+              "description": "Observed peak cpu usage of 76.0% (mean 64.1%)"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 53.1342,
+              "mean_value": 49.9069,
+              "unit": "%",
+              "description": "Memory Usage: peak 53.13%, mean 49.91%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 90.0,
+              "mean_value": 77.541,
+              "unit": " conn",
+              "description": "Observed peak active connections of 90 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:30Z",
+            "onset_delta_seconds": 30.0,
+            "anomaly_samples": 58,
+            "anomaly_ratio": 0.9508,
+            "summary": "Anomaly onset at 2026-01-01T00:15:30Z (+30.0s after primary onset); anomalous in 58 samples (95.1% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 1,
+            "upstream_callers": [
+              "api_gateway"
+            ],
+            "downstream_dependencies": [
+              "database"
+            ],
+            "anomalous_callers": [
+              "api_gateway"
+            ],
+            "anomalous_dependencies": [
+              "database"
+            ],
+            "propagation_role": "Intermediate transit service",
+            "summary": "Topology role: Intermediate transit service (depth 1). Observed propagation to upstream callers: api_gateway. Downstream dependencies exhibiting anomalies: database."
+          },
+          "inference": {
+            "temporal_score": 0.5652,
+            "topology_score": 0.3,
+            "severity_score": 0.9228,
+            "composite_score": 0.2381,
+            "confidence": "MEDIUM",
+            "confidence_rationale": "Rank 3 candidate score (0.238)."
+          },
+          "summary": "Observed propagation: 'orders_service' ranked #3 as a cascading failure symptom (downstream dependency failing) (Score: 0.238). Anomaly onset at 2026-01-01T00:15:30Z (+30.0s after primary onset); anomalous in 58 samples (95.1% persistence). Topology role: Intermediate transit service (depth 1). Observed propagation to upstream callers: api_gateway. Downstream dependencies exhibiting anomalies: database. Supporting evidence: Severe connection saturation: peak 80.7%; Elevated error rate: peak 28.36%.",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        },
+        {
+          "candidate_service": "api_gateway",
+          "rank": 4,
+          "score": 0.122,
+          "confidence": "LOW",
+          "classification": "Cascading failure symptom (downstream dependency failing)",
+          "supporting_signals": [
+            "Elevated error rate: peak 35.31%",
+            "High response latency: peak 977.5ms",
+            "High active connections: 108"
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 0.3748,
+              "mean_value": 0.2982,
+              "unit": "%",
+              "description": "Connection Pool Utilization: peak 37.48%, mean 29.82%"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.3531,
+              "mean_value": 0.3147,
+              "unit": "%",
+              "description": "Observed peak error rate of 35.31% (mean 31.47%)"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 977.5186,
+              "mean_value": 869.0011,
+              "unit": "ms",
+              "description": "Observed peak response latency of 977.5ms (mean 869.0ms)"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 57.635,
+              "mean_value": 47.2246,
+              "unit": "%",
+              "description": "CPU Usage: peak 57.64%, mean 47.22%"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 48.7221,
+              "mean_value": 45.0009,
+              "unit": "%",
+              "description": "Memory Usage: peak 48.72%, mean 45.00%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 108.0,
+              "mean_value": 95.1475,
+              "unit": " conn",
+              "description": "Observed peak active connections of 108 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:50Z",
+            "onset_delta_seconds": 50.0,
+            "anomaly_samples": 56,
+            "anomaly_ratio": 0.918,
+            "summary": "Anomaly onset at 2026-01-01T00:15:50Z (+50.0s after primary onset); anomalous in 56 samples (91.8% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 0,
+            "upstream_callers": [],
+            "downstream_dependencies": [
+              "auth_service",
+              "orders_service"
+            ],
+            "anomalous_callers": [],
+            "anomalous_dependencies": [
+              "auth_service",
+              "orders_service"
+            ],
+            "propagation_role": "Top-level ingress caller",
+            "summary": "Topology role: Top-level ingress caller (depth 0). Downstream dependencies exhibiting anomalies: auth_service, orders_service."
+          },
+          "inference": {
+            "temporal_score": 0.2754,
+            "topology_score": 0.0,
+            "severity_score": 0.7103,
+            "composite_score": 0.122,
+            "confidence": "LOW",
+            "confidence_rationale": "Rank 4 candidate score (0.122)."
+          },
+          "summary": "Observed propagation: 'api_gateway' ranked #4 as a cascading failure symptom (downstream dependency failing) (Score: 0.122). Anomaly onset at 2026-01-01T00:15:50Z (+50.0s after primary onset); anomalous in 56 samples (91.8% persistence). Topology role: Top-level ingress caller (depth 0). Downstream dependencies exhibiting anomalies: auth_service, orders_service. Supporting evidence: Elevated error rate: peak 35.31%; High response latency: peak 977.5ms.",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        }
+      ],
+      "top_1": {
+        "candidate_service": "database",
+        "rank": 1,
+        "score": 0.3881,
+        "confidence": "MEDIUM",
+        "classification": "Probable root cause",
+        "supporting_signals": [
+          "Severe connection saturation: peak 100.0%",
+          "Elevated error rate: peak 4.08%",
+          "High response latency: peak 656.8ms",
+          "High CPU utilization: peak 84.6%",
+          "High active connections: 110"
+        ],
+        "contributing_metrics": [
+          {
+            "metric_name": "connection_utilization",
+            "display_name": "Connection Pool Utilization",
+            "peak_value": 1.0,
+            "mean_value": 0.9453,
+            "unit": "%",
+            "description": "Observed peak connection pool utilization of 100.0% (mean 94.5%)"
+          },
+          {
+            "metric_name": "error_rate",
+            "display_name": "Error Rate",
+            "peak_value": 0.0408,
+            "mean_value": 0.0388,
+            "unit": "%",
+            "description": "Observed peak error rate of 4.08% (mean 3.88%)"
+          },
+          {
+            "metric_name": "latency_ms",
+            "display_name": "Response Latency",
+            "peak_value": 656.8472,
+            "mean_value": 628.3828,
+            "unit": "ms",
+            "description": "Observed peak response latency of 656.8ms (mean 628.4ms)"
+          },
+          {
+            "metric_name": "cpu_usage_pct",
+            "display_name": "CPU Usage",
+            "peak_value": 84.6382,
+            "mean_value": 76.524,
+            "unit": "%",
+            "description": "Observed peak cpu usage of 84.6% (mean 76.5%)"
+          },
+          {
+            "metric_name": "memory_usage_pct",
+            "display_name": "Memory Usage",
+            "peak_value": 67.3325,
+            "mean_value": 65.0374,
+            "unit": "%",
+            "description": "Memory Usage: peak 67.33%, mean 65.04%"
+          },
+          {
+            "metric_name": "active_connections",
+            "display_name": "Active Connections",
+            "peak_value": 110.0,
+            "mean_value": 98.0656,
+            "unit": " conn",
+            "description": "Observed peak active connections of 110 conn"
+          }
+        ],
+        "temporal_evidence": {
+          "earliest_anomaly_timestamp": "2026-01-01T00:15:10Z",
+          "onset_delta_seconds": 10.0,
+          "anomaly_samples": 60,
+          "anomaly_ratio": 0.9836,
+          "summary": "Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence)."
+        },
+        "dependency_evidence": {
+          "topology_depth": 2,
+          "upstream_callers": [
+            "orders_service"
+          ],
+          "downstream_dependencies": [],
+          "anomalous_callers": [
+            "orders_service"
+          ],
+          "anomalous_dependencies": [],
+          "propagation_role": "Leaf downstream dependency",
+          "summary": "Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service."
+        },
+        "inference": {
+          "temporal_score": 0.8551,
+          "topology_score": 1.0,
+          "severity_score": 0.8945,
+          "composite_score": 0.3881,
+          "confidence": "MEDIUM",
+          "confidence_rationale": "Moderate candidate score (0.388) with +0.136 lead over runner-up."
+        },
+        "summary": "Probable root cause: 'database' ranked #1 (Score: 0.388, Confidence: MEDIUM). Temporal evidence: Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence). Dependency evidence: Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service. Supporting evidence: Severe connection saturation: peak 100.0%; Elevated error rate: peak 4.08%.",
+        "limitations": [
+          "Heuristic candidate ranking is not definitive causal proof.",
+          "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+          "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+        ]
+      },
+      "top_3": [
+        {
+          "candidate_service": "database",
+          "rank": 1,
+          "score": 0.3881,
+          "confidence": "MEDIUM",
+          "classification": "Probable root cause",
+          "supporting_signals": [
+            "Severe connection saturation: peak 100.0%",
+            "Elevated error rate: peak 4.08%",
+            "High response latency: peak 656.8ms",
+            "High CPU utilization: peak 84.6%",
+            "High active connections: 110"
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 1.0,
+              "mean_value": 0.9453,
+              "unit": "%",
+              "description": "Observed peak connection pool utilization of 100.0% (mean 94.5%)"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.0408,
+              "mean_value": 0.0388,
+              "unit": "%",
+              "description": "Observed peak error rate of 4.08% (mean 3.88%)"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 656.8472,
+              "mean_value": 628.3828,
+              "unit": "ms",
+              "description": "Observed peak response latency of 656.8ms (mean 628.4ms)"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 84.6382,
+              "mean_value": 76.524,
+              "unit": "%",
+              "description": "Observed peak cpu usage of 84.6% (mean 76.5%)"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 67.3325,
+              "mean_value": 65.0374,
+              "unit": "%",
+              "description": "Memory Usage: peak 67.33%, mean 65.04%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 110.0,
+              "mean_value": 98.0656,
+              "unit": " conn",
+              "description": "Observed peak active connections of 110 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:10Z",
+            "onset_delta_seconds": 10.0,
+            "anomaly_samples": 60,
+            "anomaly_ratio": 0.9836,
+            "summary": "Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 2,
+            "upstream_callers": [
+              "orders_service"
+            ],
+            "downstream_dependencies": [],
+            "anomalous_callers": [
+              "orders_service"
+            ],
+            "anomalous_dependencies": [],
+            "propagation_role": "Leaf downstream dependency",
+            "summary": "Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service."
+          },
+          "inference": {
+            "temporal_score": 0.8551,
+            "topology_score": 1.0,
+            "severity_score": 0.8945,
+            "composite_score": 0.3881,
+            "confidence": "MEDIUM",
+            "confidence_rationale": "Moderate candidate score (0.388) with +0.136 lead over runner-up."
+          },
+          "summary": "Probable root cause: 'database' ranked #1 (Score: 0.388, Confidence: MEDIUM). Temporal evidence: Anomaly onset at 2026-01-01T00:15:10Z (+10.0s after primary onset); anomalous in 60 samples (98.4% persistence). Dependency evidence: Topology role: Leaf downstream dependency (depth 2). Observed propagation to upstream callers: orders_service. Supporting evidence: Severe connection saturation: peak 100.0%; Elevated error rate: peak 4.08%.",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        },
+        {
+          "candidate_service": "auth_service",
+          "rank": 2,
+          "score": 0.2518,
+          "confidence": "MEDIUM",
+          "classification": "Secondary contributing service",
+          "supporting_signals": [
+            "Nominal metric ranges across observed window."
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 0.2409,
+              "mean_value": 0.1941,
+              "unit": "%",
+              "description": "Connection Pool Utilization: peak 24.09%, mean 19.41%"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.0016,
+              "mean_value": 0.001,
+              "unit": "%",
+              "description": "Error Rate: peak 0.16%, mean 0.10%"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 10.6335,
+              "mean_value": 7.8785,
+              "unit": "ms",
+              "description": "Response Latency: peak 10.63ms, mean 7.88ms"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 22.8983,
+              "mean_value": 18.2972,
+              "unit": "%",
+              "description": "CPU Usage: peak 22.90%, mean 18.30%"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 36.8397,
+              "mean_value": 34.999,
+              "unit": "%",
+              "description": "Memory Usage: peak 36.84%, mean 35.00%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 41.0,
+              "mean_value": 30.2131,
+              "unit": " conn",
+              "description": "Active Connections: peak 41.00 conn, mean 30.21 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:00Z",
+            "onset_delta_seconds": 0.0,
+            "anomaly_samples": 5,
+            "anomaly_ratio": 0.082,
+            "summary": "Earliest anomaly onset at 2026-01-01T00:15:00Z (t0 across all services); anomalous in 5 samples (8.2% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 1,
+            "upstream_callers": [
+              "api_gateway"
+            ],
+            "downstream_dependencies": [],
+            "anomalous_callers": [
+              "api_gateway"
+            ],
+            "anomalous_dependencies": [],
+            "propagation_role": "Leaf downstream dependency",
+            "summary": "Topology role: Leaf downstream dependency (depth 1). Observed propagation to upstream callers: api_gateway."
+          },
+          "inference": {
+            "temporal_score": 0.7246,
+            "topology_score": 0.8,
+            "severity_score": 0.0964,
+            "composite_score": 0.2518,
+            "confidence": "MEDIUM",
+            "confidence_rationale": "Rank 2 candidate score (0.252)."
+          },
+          "summary": "Observed propagation: 'auth_service' ranked #2 as a secondary contributing service (Score: 0.252). Earliest anomaly onset at 2026-01-01T00:15:00Z (t0 across all services); anomalous in 5 samples (8.2% persistence). Topology role: Leaf downstream dependency (depth 1). Observed propagation to upstream callers: api_gateway. Supporting evidence: Nominal metric ranges across observed window..",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        },
+        {
+          "candidate_service": "orders_service",
+          "rank": 3,
+          "score": 0.2381,
+          "confidence": "MEDIUM",
+          "classification": "Cascading failure symptom (downstream dependency failing)",
+          "supporting_signals": [
+            "Severe connection saturation: peak 80.7%",
+            "Elevated error rate: peak 28.36%",
+            "High response latency: peak 884.9ms",
+            "High CPU utilization: peak 76.0%",
+            "High active connections: 90"
+          ],
+          "contributing_metrics": [
+            {
+              "metric_name": "connection_utilization",
+              "display_name": "Connection Pool Utilization",
+              "peak_value": 0.807,
+              "mean_value": 0.7199,
+              "unit": "%",
+              "description": "Observed peak connection pool utilization of 80.7% (mean 72.0%)"
+            },
+            {
+              "metric_name": "error_rate",
+              "display_name": "Error Rate",
+              "peak_value": 0.2836,
+              "mean_value": 0.2613,
+              "unit": "%",
+              "description": "Observed peak error rate of 28.36% (mean 26.13%)"
+            },
+            {
+              "metric_name": "latency_ms",
+              "display_name": "Response Latency",
+              "peak_value": 884.8752,
+              "mean_value": 812.9852,
+              "unit": "ms",
+              "description": "Observed peak response latency of 884.9ms (mean 813.0ms)"
+            },
+            {
+              "metric_name": "cpu_usage_pct",
+              "display_name": "CPU Usage",
+              "peak_value": 76.0116,
+              "mean_value": 64.1297,
+              "unit": "%",
+              "description": "Observed peak cpu usage of 76.0% (mean 64.1%)"
+            },
+            {
+              "metric_name": "memory_usage_pct",
+              "display_name": "Memory Usage",
+              "peak_value": 53.1342,
+              "mean_value": 49.9069,
+              "unit": "%",
+              "description": "Memory Usage: peak 53.13%, mean 49.91%"
+            },
+            {
+              "metric_name": "active_connections",
+              "display_name": "Active Connections",
+              "peak_value": 90.0,
+              "mean_value": 77.541,
+              "unit": " conn",
+              "description": "Observed peak active connections of 90 conn"
+            }
+          ],
+          "temporal_evidence": {
+            "earliest_anomaly_timestamp": "2026-01-01T00:15:30Z",
+            "onset_delta_seconds": 30.0,
+            "anomaly_samples": 58,
+            "anomaly_ratio": 0.9508,
+            "summary": "Anomaly onset at 2026-01-01T00:15:30Z (+30.0s after primary onset); anomalous in 58 samples (95.1% persistence)."
+          },
+          "dependency_evidence": {
+            "topology_depth": 1,
+            "upstream_callers": [
+              "api_gateway"
+            ],
+            "downstream_dependencies": [
+              "database"
+            ],
+            "anomalous_callers": [
+              "api_gateway"
+            ],
+            "anomalous_dependencies": [
+              "database"
+            ],
+            "propagation_role": "Intermediate transit service",
+            "summary": "Topology role: Intermediate transit service (depth 1). Observed propagation to upstream callers: api_gateway. Downstream dependencies exhibiting anomalies: database."
+          },
+          "inference": {
+            "temporal_score": 0.5652,
+            "topology_score": 0.3,
+            "severity_score": 0.9228,
+            "composite_score": 0.2381,
+            "confidence": "MEDIUM",
+            "confidence_rationale": "Rank 3 candidate score (0.238)."
+          },
+          "summary": "Observed propagation: 'orders_service' ranked #3 as a cascading failure symptom (downstream dependency failing) (Score: 0.238). Anomaly onset at 2026-01-01T00:15:30Z (+30.0s after primary onset); anomalous in 58 samples (95.1% persistence). Topology role: Intermediate transit service (depth 1). Observed propagation to upstream callers: api_gateway. Downstream dependencies exhibiting anomalies: database. Supporting evidence: Severe connection saturation: peak 80.7%; Elevated error rate: peak 28.36%.",
+          "limitations": [
+            "Heuristic candidate ranking is not definitive causal proof.",
+            "Unobserved network hops, external third-party outages, or OS hardware faults cannot be ruled out.",
+            "Propagation reasoning assumes a directed acyclic graph (DAG) topology."
+          ]
+        }
+      ],
+      "disclaimer": "This explanation represents a probabilistic heuristic ranking based on temporal anomaly onset, topology graph structure, and metric deviation magnitudes. It is supporting evidence for triage and not verified causal proof."
+    }
+  },
+  "system_performance": {
+    "artifact_sizes": {
+      "isolation_forest_kb": 2243.54,
+      "incident_predictor_kb": 2.22,
+      "severity_classifier_kb": 2.3,
+      "total_models_size_kb": 2248.07
+    },
+    "inference_metrics": {
+      "batch_size_records": 720,
+      "isolation_forest_batch_ms": 150.37,
+      "isolation_forest_per_sample_us": 208.85,
+      "incident_predictor_batch_ms": 7.47,
+      "incident_predictor_per_sample_us": 10.37,
+      "severity_classifier_batch_ms": 7.35,
+      "severity_classifier_per_sample_us": 10.21,
+      "peak_inference_memory_kb": 306.28
+    },
+    "api_latencies": {
+      "get_health_ms": 13.41,
+      "get_mlops_status_ms": 3.24,
+      "post_telemetry_summary_ms": 19.36,
+      "post_anomalies_detect_ms": 144.45,
+      "post_incidents_predict_ms": 47.79,
+      "post_incidents_severity_ms": 50.59,
+      "post_rca_rank_ms": 112.89,
+      "post_rca_explain_ms": 114.1
+    }
+  }
+}

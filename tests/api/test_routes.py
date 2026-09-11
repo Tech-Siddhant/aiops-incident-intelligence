@@ -132,3 +132,11 @@ def test_missing_model_error(client, sample_records, monkeypatch):
     with pytest.raises(Exception):
         routes.get_model(IsolationForestDetector, "nonexistent_model.joblib")
 
+def test_telemetry_latest(client):
+    res = client.get("/api/v1/telemetry/latest")
+    assert res.status_code in [200, 404]
+
+def test_mlops_health(client):
+    res = client.get("/api/v1/mlops/health")
+    assert res.status_code in [200, 404]
+
