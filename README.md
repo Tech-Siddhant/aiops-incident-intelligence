@@ -64,39 +64,60 @@ This project was built to address these problems through deterministic ML pipeli
 
 The operational data flow moves deterministically from continuous metric ingestion to progressive UI disclosure:
 
-```
-Telemetry Stream (4 microservices, 10s intervals)
-       │
-       ▼
-Preprocessing & Causal Trailing Feature Extraction (zero future leakage)
-       │
-       ├───────────────────────────────┐
-       ▼                               ▼
-Anomaly Detection (Isolation Forest)   Incident Prediction (30m Horizon)
-       │                               │
-       └───────────────┬───────────────┘
-                       ▼
-          Severity Classification (Low / Med / High / Critical)
-                       │
-                       ▼
-          Topology & Temporal RCA Engine (Ranked Probable Contributors)
-                       │
-                       ▼
-          Evidence & Natural Language Runbook Generation
-                       │
-                       ▼
-          FastAPI REST Engine (< 100ms response)
-                       │
-                       ▼
-    Interactive Single-Page Application
-    ├── Default View: Operational Answers (What, Where, Severity, Recommended Action)
-    └── Technical View Toggle: Model versions, raw scores, feature vectors, thresholds
-```
+## System Architecture
 
-> [!NOTE]
-> **Causal Framing Guarantee**: Root Cause Analysis is explicitly framed as **"Ranked Probable Contributors"** rather than "Root Cause Confirmed". Observational telemetry establishes temporal precedence and topological correlation; it does not constitute philosophical causal certainty.
+```mermaid
+flowchart TB
 
----
+    A["Telemetry Stream<br/>4 Microservices<br/>10s Intervals"]
+
+    B["Preprocessing & Feature Engineering<br/>Causal trailing features<br/>Zero future leakage"]
+
+    A --> B
+
+    B --> C["AI / ML Intelligence Layer"]
+
+    C --> D["Anomaly Detection<br/>Isolation Forest"]
+    C --> E["Incident Prediction<br/>30-minute Horizon"]
+    C --> F["Severity Classification<br/>Low · Medium · High · Critical"]
+
+    D --> G["RCA Engine"]
+    E --> G
+    F --> G
+
+    G["Topology + Temporal RCA<br/>Ranked Probable Contributors"]
+
+    G --> H["Evidence & Explanation Layer<br/>Evidence aggregation + Natural-language runbook"]
+
+    H --> I["FastAPI REST API"]
+
+    I --> J["Interactive Web Application"]
+
+    J --> K["Operational View<br/>What · Where · Condition · Severity · Recommended Action"]
+    J --> L["Technical View<br/>Model versions · Scores · Features · Thresholds"]
+
+    %% Supporting components
+    B -. "Telemetry / features" .-> M[("Data & Model Artifacts")]
+    C -. "Models / versions" .-> M
+    H -. "Evidence / results" .-> M
+
+    classDef input fill:#f5f5f5,stroke:#555,stroke-width:1px;
+    classDef ml fill:#eef2ff,stroke:#555,stroke-width:1px;
+    classDef api fill:#f0fdf4,stroke:#555,stroke-width:1px;
+    classDef ui fill:#fff7ed,stroke:#555,stroke-width:1px;
+    classDef store fill:#f9fafb,stroke:#555,stroke-width:1px;
+
+    class A,B input;
+    class C,D,E,F,G,H ml;
+    class I api;
+    class J,K,L ui;
+    class M store;
+
+> **Architecture flow:** telemetry from multiple services is transformed into causal trailing features without future leakage. Independent ML components detect anomalies, predict near-term incidents, and classify severity. The RCA engine combines service topology and temporal signals to rank probable contributors. Evidence is then converted into an explainable incident summary and runbook before being exposed through FastAPI and the interactive web application.
+
+One important correction from your original diagram: **severity classification should be shown as a parallel ML component**, not as something that happens sequentially after incident prediction. That better represents the architecture you've described.
+
+Also, I would avoid putting **“<100ms response”** directly into the architecture diagram unless you have actually measured and validated that number. Put measured latency in the **Evaluation/Performance** section instead.
 
 ## 5. Key Capabilities
 
