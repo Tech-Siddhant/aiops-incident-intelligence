@@ -67,51 +67,42 @@ The operational data flow moves deterministically from continuous metric ingesti
 ## System Architecture
 
 ```mermaid
-flowchart TB
+flowchart LR
 
-    A["Telemetry Stream<br/>4 Microservices<br/>10s Intervals"]
+    A["Telemetry Stream<br/>4 Services · 10s"]
 
-    B["Preprocessing & Feature Engineering<br/>Causal trailing features<br/>Zero future leakage"]
+    B["Preprocessing &<br/>Causal Features<br/><small>Zero future leakage</small>"]
+
+    subgraph ML["AI / ML Intelligence"]
+        direction TB
+        C["Anomaly Detection<br/>Isolation Forest"]
+        D["Incident Prediction<br/>30-min Horizon"]
+        E["Severity Classification<br/>Low · Medium · High · Critical"]
+    end
+
+    F["RCA Engine<br/><small>Topology + Temporal Signals</small>"]
+
+    G["Evidence & Explanation<br/><small>Probable Contributors + Runbook</small>"]
+
+    H["FastAPI<br/>REST API"]
+
+    I["Web Application"]
 
     A --> B
+    B --> C
+    B --> D
+    B --> E
 
-    B --> C["AI / ML Intelligence Layer"]
+    C --> F
+    D --> F
+    E --> F
 
-    C --> D["Anomaly Detection<br/>Isolation Forest"]
-    C --> E["Incident Prediction<br/>30-minute Horizon"]
-    C --> F["Severity Classification<br/>Low · Medium · High · Critical"]
-
-    D --> G["RCA Engine"]
-    E --> G
     F --> G
+    G --> H
+    H --> I
 
-    G["Topology + Temporal RCA<br/>Ranked Probable Contributors"]
-
-    G --> H["Evidence & Explanation Layer<br/>Evidence aggregation + Natural-language runbook"]
-
-    H --> I["FastAPI REST API"]
-
-    I --> J["Interactive Web Application"]
-
-    J --> K["Operational View<br/>What · Where · Condition · Severity · Recommended Action"]
-    J --> L["Technical View<br/>Model versions · Scores · Features · Thresholds"]
-
-    %% Supporting components
-    B -. "Telemetry / features" .-> M[("Data & Model Artifacts")]
-    C -. "Models / versions" .-> M
-    H -. "Evidence / results" .-> M
-
-    classDef input fill:#f5f5f5,stroke:#555,stroke-width:1px;
-    classDef ml fill:#eef2ff,stroke:#555,stroke-width:1px;
-    classDef api fill:#f0fdf4,stroke:#555,stroke-width:1px;
-    classDef ui fill:#fff7ed,stroke:#555,stroke-width:1px;
-    classDef store fill:#f9fafb,stroke:#555,stroke-width:1px;
-
-    class A,B input;
-    class C,D,E,F,G,H ml;
-    class I api;
-    class J,K,L ui;
-    class M store;
+    I --> J["Operational View<br/><small>What · Where · Severity · Action</small>"]
+    I --> K["Technical View<br/><small>Models · Scores · Features · Thresholds</small>"]
 ```
 
 ## 5. Key Capabilities
