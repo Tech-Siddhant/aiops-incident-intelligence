@@ -112,12 +112,7 @@ flowchart TB
     class I api;
     class J,K,L ui;
     class M store;
-
-> **Architecture flow:** telemetry from multiple services is transformed into causal trailing features without future leakage. Independent ML components detect anomalies, predict near-term incidents, and classify severity. The RCA engine combines service topology and temporal signals to rank probable contributors. Evidence is then converted into an explainable incident summary and runbook before being exposed through FastAPI and the interactive web application.
-
-One important correction from your original diagram: **severity classification should be shown as a parallel ML component**, not as something that happens sequentially after incident prediction. That better represents the architecture you've described.
-
-Also, I would avoid putting **“<100ms response”** directly into the architecture diagram unless you have actually measured and validated that number. Put measured latency in the **Evaluation/Performance** section instead.
+```
 
 ## 5. Key Capabilities
 
