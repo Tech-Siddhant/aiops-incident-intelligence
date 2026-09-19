@@ -66,44 +66,44 @@ The operational data flow moves deterministically from continuous metric ingesti
 
 ## System Architecture
 
-```mermaid
-flowchart LR
+<p align="center">
+  <img
+    src="assets/workflow.png"
+    alt="AIOps Incident Intelligence system architecture"
+    width="900"
+  />
+</p>
 
-    A["Telemetry Stream<br/>4 Services · 10s"]
+<p align="center">
+  <em>
+    End-to-end flow from telemetry ingestion and causal feature engineering
+    to ML-based incident intelligence, RCA, explanation, API delivery,
+    and interactive investigation.
+  </em>
+</p>
 
-    B["Preprocessing &<br/>Causal Features<br/><small>Zero future leakage</small>"]
+### Architecture Flow
 
-    subgraph ML["AI / ML Intelligence"]
-        direction TB
-        C["Anomaly Detection<br/>Isolation Forest"]
-        D["Incident Prediction<br/>30-min Horizon"]
-        E["Severity Classification<br/>Low · Medium · High · Critical"]
-    end
+**Telemetry → Preprocessing → AI/ML Intelligence → RCA → Evidence & Explanation → FastAPI → Web Application**
 
-    F["RCA Engine<br/><small>Topology + Temporal Signals</small>"]
+The system processes telemetry from multiple services at regular intervals and transforms raw operational signals into causal trailing features without using future information.
 
-    G["Evidence & Explanation<br/><small>Probable Contributors + Runbook</small>"]
+The intelligence layer combines:
 
-    H["FastAPI<br/>REST API"]
+- **Anomaly Detection** — identifies unusual service behavior using Isolation Forest.
+- **Incident Prediction** — estimates potential incidents over a 30-minute horizon.
+- **Severity Classification** — classifies predicted incidents as Low, Medium, High, or Critical.
+- **Root Cause Analysis** — combines service topology and temporal relationships to rank probable contributors.
+- **Evidence & Explanation** — connects predictions to supporting signals and produces human-readable investigation guidance.
 
-    I["Web Application"]
+The results are exposed through a lightweight **FastAPI REST API** and presented through an interactive web application.
 
-    A --> B
-    B --> C
-    B --> D
-    B --> E
+The frontend follows two levels of detail:
 
-    C --> F
-    D --> F
-    E --> F
+- **Operational View** — answers *What happened? Where? What is the condition? How severe is it? What should be investigated?*
+- **Technical View** — exposes model versions, scores, features, thresholds, and other diagnostic information for engineers.
 
-    F --> G
-    G --> H
-    H --> I
-
-    I --> J["Operational View<br/><small>What · Where · Severity · Action</small>"]
-    I --> K["Technical View<br/><small>Models · Scores · Features · Thresholds</small>"]
-```
+> **Design principle:** the system provides ranked evidence and probable contributors for investigation rather than claiming definitive causal truth.
 
 ## 5. Key Capabilities
 
