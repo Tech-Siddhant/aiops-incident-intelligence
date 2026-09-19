@@ -27,6 +27,7 @@ import pandas as pd
 from fastapi.testclient import TestClient
 
 from app.api.main import app
+from app.config import MODELS_DIR
 from app.data.features import extract_features
 from app.data.preprocess import get_incident_labels, preprocess_telemetry
 from app.data.synthetic import SyntheticConfig, generate_synthetic_telemetry
@@ -216,7 +217,7 @@ def evaluate_rca_layer() -> dict[str, Any]:
 def evaluate_system_and_performance() -> dict[str, Any]:
     """5. Measure real system benchmarks: API latencies, inference times, artifact sizes, RAM."""
     # Ensure models are trained and saved
-    models_dir = Path("data/models")
+    models_dir = MODELS_DIR
     models_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = SyntheticConfig(duration_seconds=1800, sampling_interval_seconds=10, seed=42)

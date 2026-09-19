@@ -15,6 +15,7 @@ from app.api.schemas import (
     RcaRequest,
     TelemetryBatchRequest,
 )
+from app.config import MODELS_DIR, SYNTHETIC_DATA_DIR, TELEMETRY_PARQUET
 from app.data.preprocess import preprocess_telemetry
 from app.models.anomaly_isolation_forest import IsolationForestDetector
 from app.models.incident_predictor import IncidentPredictorBaseline
@@ -31,7 +32,7 @@ _MODELS: dict[str, Any] = {}
 def get_model(model_cls: Any, filename: str) -> Any:
     """Lazy load a specialized model artifact."""
     if filename not in _MODELS:
-        p = Path(f"data/models/{filename}")
+        p = MODELS_DIR / filename
         if not p.exists():
             raise HTTPException(status_code=404, detail=f"Model artifact {filename} not found.")
         _MODELS[filename] = model_cls.load(p)
@@ -50,7 +51,7 @@ def health_check():
 @router.get("/telemetry/latest")
 def get_latest_telemetry(limit: int = 500):
     """Retrieve the most recent telemetry records from the data store."""
-    p = Path("data/synthetic/telemetry.parquet")
+    p = SYNTHETIC_DATA_DIR / TELEMETRY_PARQUET
     if not p.exists():
         raise HTTPException(status_code=404, detail="Telemetry data not found.")
     
@@ -63,7 +64,7 @@ def get_latest_telemetry(limit: int = 500):
 def get_mlops_status():
     """Retrieve lightweight artifact inventory."""
     status: dict[str, Any] = {"artifacts": {}}
-    model_dir = Path("data/models")
+    model_dir = MODELS_DIR
     if model_dir.exists():
         for p in model_dir.glob("*.joblib"):
             status["artifacts"][p.name] = {"size_bytes": p.stat().st_size}
@@ -72,7 +73,7 @@ def get_mlops_status():
 @router.get("/mlops/health")
 def get_ml_health():
     """Run holistic health, data quality, and drift monitoring."""
-    p = Path("data/synthetic/telemetry.parquet")
+    p = SYNTHETIC_DATA_DIR / TELEMETRY_PARQUET
     if not p.exists():
         raise HTTPException(status_code=404, detail="Reference telemetry not found.")
     
@@ -87,7 +88,7 @@ def get_ml_health():
         model=detector,
         current_df=current_df,
         reference_df=reference_df,
-        artifact_path=Path("data/models/isolation_forest_latest.joblib")
+        artifact_path=MODELS_DIR / "isolation_forest_latest.joblib"
     )
     return health_report.to_dict()
 

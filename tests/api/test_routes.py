@@ -3,6 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.main import app
+from app.config import MODELS_DIR
 from app.data.synthetic import SyntheticConfig, generate_synthetic_telemetry
 from app.models.anomaly_isolation_forest import IsolationForestConfig, IsolationForestDetector
 from app.models.incident_predictor import IncidentPredictionConfig, IncidentPredictorBaseline
@@ -15,9 +16,8 @@ def client():
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_models(tmp_path_factory):
-    # Ensure baseline models are trained and present in data/models
-    from pathlib import Path
-    Path("data/models").mkdir(parents=True, exist_ok=True)
+    # Ensure baseline models are trained and present in MODELS_DIR
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
     
     cfg = SyntheticConfig(duration_seconds=1800, sampling_interval_seconds=10, seed=42)
     df, _ = generate_synthetic_telemetry(cfg)
@@ -25,7 +25,7 @@ def setup_models(tmp_path_factory):
     # 1. Isolation Forest
     if_detector = IsolationForestDetector(config=IsolationForestConfig(n_estimators=10))
     if_detector.fit(df)
-    if_detector.save("data/models/isolation_forest_latest.joblib")
+    if_detector.save(MODELS_DIR / "isolation_forest_latest.joblib")
     
     # 2. Incident Predictor
     pred = IncidentPredictorBaseline(config=IncidentPredictionConfig())
@@ -33,13 +33,13 @@ def setup_models(tmp_path_factory):
     import numpy as np
     y_pred = np.zeros(len(df), dtype=int)
     pred.fit(df, y_pred)
-    pred.save("data/models/incident_predictor_latest.joblib")
+    pred.save(MODELS_DIR / "incident_predictor_latest.joblib")
     
     # 3. Severity Classifier
     sev = SeverityClassifierBaseline(config=SeverityClassificationConfig())
     y_sev = ["low"] * len(df)
     sev.fit(df, y_sev)
-    sev.save("data/models/severity_classifier_latest.joblib")
+    sev.save(MODELS_DIR / "severity_classifier_latest.joblib")
 
 @pytest.fixture
 def sample_records():

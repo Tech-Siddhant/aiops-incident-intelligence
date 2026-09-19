@@ -18,6 +18,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.main import app
+from app.config import MODELS_DIR
 from app.data.preprocess import preprocess_telemetry
 from app.data.synthetic import SyntheticConfig, generate_synthetic_telemetry
 from app.models.anomaly_isolation_forest import IsolationForestConfig, IsolationForestDetector
@@ -35,7 +36,7 @@ def client():
 @pytest.fixture(scope="module", autouse=True)
 def setup_models():
     """Ensure trained baseline models are serialized to data/models."""
-    models_dir = Path("data/models")
+    models_dir = MODELS_DIR
     models_dir.mkdir(parents=True, exist_ok=True)
 
     cfg = SyntheticConfig(duration_seconds=1800, sampling_interval_seconds=10, seed=42)
@@ -45,7 +46,7 @@ def setup_models():
     # 1. Isolation Forest
     if_detector = IsolationForestDetector(config=IsolationForestConfig(n_estimators=20, contamination=0.1, random_state=42))
     if_detector.fit(clean_df)
-    if_detector.save("data/models/isolation_forest_latest.joblib")
+    if_detector.save(models_dir / "isolation_forest_latest.joblib")
 
     # 2. Incident Predictor
     pred = IncidentPredictorBaseline(config=IncidentPredictionConfig())
@@ -56,7 +57,7 @@ def setup_models():
         mask = (clean_df["timestamp"] >= inc["start_time"]) & (clean_df["timestamp"] <= inc["end_time"])
         y_pred[mask] = 1
     pred.fit(clean_df, y_pred)
-    pred.save("data/models/incident_predictor_latest.joblib")
+    pred.save(models_dir / "incident_predictor_latest.joblib")
 
     # 3. Severity Classifier
     sev = SeverityClassifierBaseline(config=SeverityClassificationConfig())
@@ -65,7 +66,7 @@ def setup_models():
         mask = (clean_df["timestamp"] >= inc["start_time"]) & (clean_df["timestamp"] <= inc["end_time"])
         y_sev[mask] = inc["severity"]
     sev.fit(clean_df, y_sev)
-    sev.save("data/models/severity_classifier_latest.joblib")
+    sev.save(models_dir / "severity_classifier_latest.joblib")
 
 
 @pytest.fixture
@@ -88,7 +89,7 @@ def test_e2e_frontend_static_serving(client):
 
     res_static = client.get("/static/index.html")
     assert res_static.status_code == 200
-    assert "Omniroute AIOps Incident Intelligence" in res_static.text
+    assert "AIOps Intelligence" in res_static.text
     assert "anomalies/detect" in res_static.text
     assert "rca/rank" in res_static.text
 

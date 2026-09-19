@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" fill="none">
+  <defs>
+    <linearGradient id="cardBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="960" height="520" rx="16" fill="#090d16"/>
+  <rect x="1" y="1" width="958" height="518" rx="15" stroke="#1e293d" stroke-width="2"/>
+
+  <!-- Title & Subtitle -->
+  <text x="40" y="44" fill="#f8fafc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" letter-spacing="-0.01em">AIOps Incident Intelligence — System Architecture</text>
+  <text x="40" y="66" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12">End-to-End Pipeline: Ingestion → Validation → Feature Extraction → ML Inference → Causal RCA → Dashboard</text>
+
+  <!-- Pipeline Stage 1: Data Ingestion & Storage -->
+  <g transform="translate(40, 95)" filter="url(#shadow)">
+    <rect width="180" height="380" rx="10" fill="url(#cardBg)" stroke="#334155" stroke-width="1.5"/>
+    <rect x="0" y="0" width="180" height="36" rx="10" fill="#1e293b"/>
+    <text x="16" y="24" fill="#93c5fd" font-family="sans-serif" font-size="12" font-weight="700">1. INGESTION &amp; DATA</text>
+
+    <!-- Sub-cards -->
+    <rect x="14" y="52" width="152" height="70" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="74" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">Telemetry Stream</text>
+    <text x="24" y="92" fill="#94a3b8" font-family="sans-serif" font-size="10">CPU, Memory, Latency,</text>
+    <text x="24" y="106" fill="#94a3b8" font-family="sans-serif" font-size="10">Connections, Errors (10s)</text>
+
+    <rect x="14" y="134" width="152" height="70" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="156" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">Storage Volume</text>
+    <text x="24" y="174" fill="#94a3b8" font-family="sans-serif" font-size="10">Mounted /app/data</text>
+    <text x="24" y="188" fill="#94a3b8" font-family="sans-serif" font-size="10">Parquet &amp; Joblib Binaries</text>
+
+    <rect x="14" y="216" width="152" height="70" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="238" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">Schema Validator</text>
+    <text x="24" y="256" fill="#94a3b8" font-family="sans-serif" font-size="10">Invariant Check &amp; Sort</text>
+    <text x="24" y="270" fill="#94a3b8" font-family="sans-serif" font-size="10">Null / Inf Rate Filters</text>
+
+    <rect x="14" y="298" width="152" height="68" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="320" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">Feature Extraction</text>
+    <text x="24" y="338" fill="#94a3b8" font-family="sans-serif" font-size="10">Rolling Z-Score (W=12)</text>
+    <text x="24" y="352" fill="#94a3b8" font-family="sans-serif" font-size="10">Utilization Deltas &amp; Lag</text>
+  </g>
+
+  <!-- Pipeline Stage 2: AIOps ML & Causal Engine -->
+  <g transform="translate(250, 95)" filter="url(#shadow)">
+    <rect width="420" height="380" rx="10" fill="url(#cardBg)" stroke="#3b82f6" stroke-width="2"/>
+    <rect x="0" y="0" width="420" height="36" rx="10" fill="#1e3a8a"/>
+    <text x="16" y="24" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="700">2. AIOps MACHINE LEARNING &amp; RCA ENGINE</text>
+
+    <!-- Model 1 -->
+    <rect x="16" y="52" width="186" height="88" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="28" y="74" fill="#60a5fa" font-family="sans-serif" font-size="12" font-weight="600">Anomaly Detection</text>
+    <text x="28" y="90" fill="#e2e8f0" font-family="sans-serif" font-size="11">Isolation Forest</text>
+    <text x="28" y="106" fill="#94a3b8" font-family="sans-serif" font-size="10">F1: 0.772 | Precision: 71.6%</text>
+    <text x="28" y="122" fill="#10b981" font-family="sans-serif" font-size="10">Multivariate outlier isolation</text>
+
+    <!-- Model 2 -->
+    <rect x="218" y="52" width="186" height="88" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="230" y="74" fill="#60a5fa" font-family="sans-serif" font-size="12" font-weight="600">Incident Prediction</text>
+    <text x="230" y="90" fill="#e2e8f0" font-family="sans-serif" font-size="11">Logistic Regression</text>
+    <text x="230" y="106" fill="#94a3b8" font-family="sans-serif" font-size="10">ROC-AUC: 0.967 | Lead: 5m</text>
+    <text x="230" y="122" fill="#10b981" font-family="sans-serif" font-size="10">Pre-outage alert forecasting</text>
+
+    <!-- Model 3 -->
+    <rect x="16" y="152" width="186" height="88" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="28" y="174" fill="#60a5fa" font-family="sans-serif" font-size="12" font-weight="600">Severity Classifier</text>
+    <text x="28" y="190" fill="#e2e8f0" font-family="sans-serif" font-size="11">Multiclass LogReg</text>
+    <text x="28" y="206" fill="#94a3b8" font-family="sans-serif" font-size="10">Macro F1: 0.941 | Latency: 0.8ms</text>
+    <text x="28" y="222" fill="#10b981" font-family="sans-serif" font-size="10">Low / Medium / High / Critical</text>
+
+    <!-- Model 4 -->
+    <rect x="218" y="152" width="186" height="88" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="230" y="174" fill="#60a5fa" font-family="sans-serif" font-size="12" font-weight="600">RCA Graph Engine</text>
+    <text x="230" y="190" fill="#e2e8f0" font-family="sans-serif" font-size="11">Temporal &amp; Topology Heuristic</text>
+    <text x="230" y="206" fill="#94a3b8" font-family="sans-serif" font-size="10">Top-1 Acc: 100% | MRR: 1.00</text>
+    <text x="230" y="222" fill="#10b981" font-family="sans-serif" font-size="10">Causal ranking &amp; candidates</text>
+
+    <!-- Causal Synthesis & Runbooks -->
+    <rect x="16" y="252" width="388" height="114" rx="6" fill="#090d16" stroke="#334155"/>
+    <text x="28" y="274" fill="#f59e0b" font-family="sans-serif" font-size="12" font-weight="600">Evidence Synthesis &amp; Remediation Runbook</text>
+    <text x="28" y="294" fill="#cbd5e1" font-family="sans-serif" font-size="11">• Multi-Signal Correlation: Temporal sequence + service dependency cascade</text>
+    <text x="28" y="312" fill="#cbd5e1" font-family="sans-serif" font-size="11">• Cautious Framing: Probable contributors with score decomposition</text>
+    <text x="28" y="330" fill="#cbd5e1" font-family="sans-serif" font-size="11">• Operational Actions: Targeted remediation runbooks per incident scenario</text>
+    <text x="28" y="348" fill="#94a3b8" font-family="sans-serif" font-size="10">Automated Natural-Language Summary Generation</text>
+  </g>
+
+  <!-- Pipeline Stage 3: Serving & UI -->
+  <g transform="translate(700, 95)" filter="url(#shadow)">
+    <rect width="220" height="380" rx="10" fill="url(#cardBg)" stroke="#334155" stroke-width="1.5"/>
+    <rect x="0" y="0" width="220" height="36" rx="10" fill="#1e293b"/>
+    <text x="16" y="24" fill="#93c5fd" font-family="sans-serif" font-size="12" font-weight="700">3. REST API &amp; DASHBOARD</text>
+
+    <rect x="14" y="52" width="192" height="88" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="74" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">FastAPI ASGI Server</text>
+    <text x="24" y="92" fill="#94a3b8" font-family="sans-serif" font-size="10">Uvicorn on Port 8000</text>
+    <text x="24" y="106" fill="#94a3b8" font-family="sans-serif" font-size="10">Structured Pydantic Schemas</text>
+    <text x="24" y="120" fill="#10b981" font-family="sans-serif" font-size="10">P95 Latency: &lt; 80ms</text>
+
+    <rect x="14" y="152" width="192" height="106" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="174" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">AIOps Intelligence UI</text>
+    <text x="24" y="192" fill="#94a3b8" font-family="sans-serif" font-size="10">Vanilla JS/CSS (Zero Bloat)</text>
+    <text x="24" y="206" fill="#94a3b8" font-family="sans-serif" font-size="10">Default View: "What is wrong?"</text>
+    <text x="24" y="220" fill="#38bdf8" font-family="sans-serif" font-size="10">Tech View: "Why believe this?"</text>
+    <text x="24" y="234" fill="#94a3b8" font-family="sans-serif" font-size="10">Temporal Timeline &amp; Sparklines</text>
+
+    <rect x="14" y="270" width="192" height="96" rx="6" fill="#090d16" stroke="#1e293d"/>
+    <text x="24" y="292" fill="#f1f5f9" font-family="sans-serif" font-size="12" font-weight="600">MLOps &amp; Drift Monitor</text>
+    <text x="24" y="310" fill="#94a3b8" font-family="sans-serif" font-size="10">Kolmogorov-Smirnov (KS-test)</text>
+    <text x="24" y="324" fill="#94a3b8" font-family="sans-serif" font-size="10">Population Stability (PSI)</text>
+    <text x="24" y="338" fill="#94a3b8" font-family="sans-serif" font-size="10">Model Artifact Health &amp; Drift</text>
+  </g>
+
+  <!-- Connecting Arrows -->
+  <path d="M220 285 L250 285" stroke="#3b82f6" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M670 285 L700 285" stroke="#3b82f6" stroke-width="2.5"/>
+</svg>

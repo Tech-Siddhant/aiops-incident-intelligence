@@ -8,6 +8,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from app.config import EXPERIMENTS_DIR, MODELS_DIR
 from app.data.preprocess import preprocess_telemetry
 from app.data.synthetic import SyntheticConfig, generate_synthetic_telemetry
 from app.mlops.drift import detect_data_drift
@@ -49,8 +50,8 @@ def run_e2e_mlops_monitoring():
     )
     detector.fit(train_ref)
 
-    tracker = ExperimentTracker(storage_dir="data/experiments")
-    artifact_dir = Path("data/models")
+    tracker = ExperimentTracker(storage_dir=EXPERIMENTS_DIR)
+    artifact_dir = MODELS_DIR
     artifact_dir.mkdir(parents=True, exist_ok=True)
     art_path = artifact_dir / "isolation_forest_latest.joblib"
     detector.save(art_path)

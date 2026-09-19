@@ -44,14 +44,21 @@ async def log_requests(request: Request, call_next):
 
 from fastapi.responses import RedirectResponse
 
+from app.config import FRONTEND_STATIC_DIR
+
 app.include_router(router)
 
 # Mount static files for the dashboard
-app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+if FRONTEND_STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_STATIC_DIR)), name="static")
 
 @app.get("/", include_in_schema=False)
 def redirect_to_dashboard():
     return RedirectResponse(url="/static/index.html")
+
+@app.get("/health", include_in_schema=True)
+def root_health_check():
+    return {"status": "ok", "service": "omniroute-aiops"}
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

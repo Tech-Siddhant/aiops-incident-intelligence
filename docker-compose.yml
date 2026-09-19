@@ -1,0 +1,20 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aiops-incident-intelligence
+    ports:
+      - "${PORT:-8000}:${PORT:-8000}"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - PORT=${PORT:-8000}
+      - HOST=0.0.0.0
+      - AIOPS_DATA_DIR=/app/data
+      - AIOPS_SEED=${AIOPS_SEED:-42}
+    volumes:
+      - ./data:/app/data
+      - ./frontend:/app/frontend:ro
+    restart: unless-stopped

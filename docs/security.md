@@ -1,31 +1,30 @@
-# Security, Reliability & Data Integrity Architecture
+# Security, Reliability & Operational Integrity
 
-This document details the security posture, operational reliability guarantees, and data integrity safeguards implemented across the **OmniRoute AIOps Incident Intelligence** platform.
+## 1. Threat Model & Trust Boundaries
 
----
+The AIOps Incident Intelligence platform is designed to operate securely within enterprise operational environments.
 
-## 1. Security Architecture & Threat Model
-
-### 1.1 Input Boundary Validation & Schema Enforcement
-All ingress data paths (REST endpoints and CLI entry points) enforce strict structural and type validation using **Pydantic v2**:
-- **Timestamp Validation**: Strict parsing of ISO-8601 UTC timestamps (`YYYY-MM-DDTHH:MM:SSZ` or ISO format). Malformed or unparseable timestamps trigger HTTP 422 immediately.
-- **Metric Domain Bounds**: Telemetry features are guarded with non-negative constraints and percentage ceilings:
+### 1.1 Ingress Boundary Validation
+All REST APIs and CLI entrypoints enforce strict structural, type, and domain constraint validation via **Pydantic v2**:
+- **Timestamp Validation**: Strict parsing of ISO-8601 UTC timestamps (`YYYY-MM-DDTHH:MM:SSZ`). Malformed timestamps trigger `HTTP 422 Unprocessable Entity` immediately.
+- **Metric Domain Bounds**: Telemetry inputs are mathematically bounded:
   - `latency_ms >= 0.0`
   - `error_rate` bounded within $[0.0, 1.0]$
   - `cpu_usage_pct`, `memory_usage_pct`, `disk_usage_pct` bounded within $[0.0, 100.0]$
   - `connection_utilization` bounded within $[0.0, 1.0]$
   - `request_rate_rps >= 0.0`, `active_connections >= 0`
-- **Payload Size Guards**: Batch requests reject empty payloads (`records=[]`) with `HTTP 400 Bad Request` and cap payload processing to bounded batch sizes to prevent memory exhaustion DoS vectors.
+- **DoS / Resource Exhaustion Protections**: Batch payloads enforce max record limits; empty payload requests (`records=[]`) are rejected immediately with `HTTP 400 Bad Request`.
 
 ### 1.2 Zero Remote Data Exfiltration & Offline Execution
-- **Self-Contained Local Runtime**: The platform requires zero external cloud network connections, SaaS telemetry backends, or third-party LLM API endpoints during runtime.
-- **Deterministic Deserialization**: Model artifact loading uses scoped `joblib.load()` guarded within local trusted artifact directories (`data/models/`). Dynamic code execution (`eval`, `exec`) is strictly forbidden across all modules.
+- **Self-Contained Local Runtime**: The platform executes 100% locally with zero external network calls, zero SaaS telemetry backends, and zero third-party cloud LLM API dependencies.
+- **Deterministic Deserialization**: Model artifact loading uses scoped `joblib.load()` guarded within local trusted artifact directories (`data/models/`). Arbitrary code execution (`eval`, `exec`) is strictly prohibited.
+- **No Secret Sprawl**: The system requires zero external credentials, database passwords, or cloud API keys to operate.
 
 ---
 
-## 2. Zero Future-Data Leakage & Temporal Integrity
+## 2. Temporal Integrity & Zero Future Leakage
 
-In AIOps time-series and incident prediction systems, data leakage across time splits creates unrealistically optimistic evaluation scores that fail in production. OmniRoute enforces three strict leakage guarantees:
+In time-series machine learning, subtle future-leakage leads to artificially inflated validation metrics that collapse in production. OmniRoute enforces three strict leakage guarantees:
 
 ```
 Telemetry Stream: [ t_0 --------------------------> t_N ]
@@ -34,8 +33,8 @@ Telemetry Stream: [ t_0 --------------------------> t_N ]
                                     Split 1        Split 2
 ```
 
-1. **Chronological Splitting**: Continuous telemetry streams are partitioned strictly chronologically (60% Train, 20% Validation, 20% Test). No randomized $K$-fold cross-validation or shuffle-splitting is used anywhere in the pipeline.
-2. **Causal Rolling Windows**: All feature engineering (trailing moving averages, EWMA, rolling max, rolling standard deviation) uses strictly causal, trailing windows (`closed="right"` in pandas). No centering or backward lookups (`shift(-k)`) are permitted in feature extraction.
+1. **Chronological Splitting**: Continuous telemetry streams are partitioned strictly chronologically (60% Train, 20% Validation, 20% Test). No randomized $K$-fold cross-validation or shuffle-splitting is permitted.
+2. **Causal Rolling Windows**: All feature engineering (trailing moving averages, EWMA, rolling max, rolling standard deviation) uses strictly causal, trailing windows (`closed="right"` in pandas). No centering or backward lookups (`shift(-k)`) are permitted.
 3. **Scaler & Baseline Isolation**: `StandardScaler` transformations and statistical normalization parameters are fitted exclusively on the training partition ($0\% - 60\%$) and applied forward to validation and test partitions without refitting.
 
 ---

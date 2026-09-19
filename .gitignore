@@ -29,11 +29,16 @@ htmlcov/
 
 # Tool & Assistant Caches
 .serena/
+.cline/
+.clinerules
+
+# Jupyter & Caches
+.ipynb_checkpoints/
+*.log
+node_modules/
 
 # OS & Temporary
 .DS_Store
 Thumbs.db
 /tmp/
 *.tmp
-
-

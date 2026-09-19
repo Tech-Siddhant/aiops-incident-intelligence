@@ -20,6 +20,7 @@ from app.config import (
     DEFAULT_SEED,
     DEFAULT_START_TIME,
     INCIDENTS_JSON,
+    MODELS_DIR,
     SYNTHETIC_DATA_DIR,
     TELEMETRY_PARQUET,
 )
@@ -51,8 +52,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="data/models",
-        help="Directory to save trained model artifacts (default: data/models)",
+        default=str(MODELS_DIR),
+        help=f"Directory to save trained model artifacts (default: {MODELS_DIR})",
     )
     parser.add_argument(
         "--seed",
